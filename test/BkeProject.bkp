@@ -1,0 +1,12 @@
+{
+    "import": {
+        "macro.bkscr": 0
+    },
+    "name": "test",
+    "script": {
+        "main.bkscr": 0
+    },
+    "source": {
+    },
+    "version": "1.2"
+}
