@@ -1,4 +1,4 @@
-a = "@sprite index=0 file='a.png' "
+a = "@sprite index=0 file='a.png' rect=[0,0,0,0] "
 start = 0 #开始位置 为0
 current = 0 #当前位置 
 
