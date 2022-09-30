@@ -19,7 +19,7 @@ def getMacro():
     while peek() != ' ' and not isAtEnd():
         eatNext()
     if isAtEnd():
-        print("宏名不完整")
+        print("第" + str(current) + "列处，宏名不完整")
         return
     value = a[start +1 : current]
     #print(value)
@@ -66,7 +66,7 @@ def getParamValue():
         while peek() != ' ' and not isAtEnd():
             eatNext()
         if isAtEnd():
-            print("第" + str(current) + "列处，参数不完整")
+            print("第" + str(current) + "列处，int参数不完整")
             return
         value:str = a[start+1 : current]
         #print("int型的值为",value)
@@ -78,7 +78,7 @@ def getParamValue():
         while peek() != "'" and not isAtEnd():
             eatNext()
         if isAtEnd():
-            print("第" + str(current) + "列处，参数不完整")
+            print("第" + str(current) + "列处，字符串不完整")
             return
         value:str = a[start+2 : current]
         #print("string型的值为",value)
