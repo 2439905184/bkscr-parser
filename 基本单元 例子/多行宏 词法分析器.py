@@ -1,4 +1,4 @@
-a = '[sprite index=0 rect=[0,0,0,0] file="a.png"] [addto index=0 target=basic_layer]' # [addto index=0 pos=[0,2]]
+a = '[sprite index=0 rect=[0,0,0,0] file="a.png"] [addto index=0 target=basic_layer] //注释commant'
 # 基于逐行分析
 """"
 start = 0 #开始位置 为0
@@ -128,16 +128,15 @@ import re
 regex = r"([a-z_0-9]+)|(\"(.*)\")"
 
 test_str = '[sprite index=0 file="a.png" rect=[0,0,0,0] ]'
-
-matches = re.finditer(regex, a)
+pre = re.sub(r"//[^\n]*"," ",a)
+#print("预处理",pre)
+matches = re.finditer(regex, pre)
 result = []
-pre = []
 for matchNum, match in enumerate(matches, start=1):
     
     m = match.group().strip('"')
     result.append(m)
-
-    print(m)
+    #print(m)
     #print ("在{start}-{end}找到匹配{matchNum}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group()))
     
     # for groupNum in range(0, len(match.groups())):
