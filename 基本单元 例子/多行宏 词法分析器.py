@@ -1,4 +1,6 @@
-a = "[sprite index=0 rect=[0,0,0,0] file='a.png']" # [addto index=0 pos=[0,2]]
+a = '[sprite index=0 rect=[0,0,0,0] file="a.png"] [addto index=0 target=basic_layer]' # [addto index=0 pos=[0,2]]
+# 基于逐行分析
+""""
 start = 0 #开始位置 为0
 current = 0 #当前位置 
 
@@ -119,3 +121,34 @@ def scanTokens():
     return tokens
 result = scanTokens()
 print(result)
+"""
+# 基于正则表达
+import re
+#匹配字母 下划线 数字 或者字符串里面的内容
+regex = r"([a-z_0-9]+)|(\"(.*)\")"
+
+test_str = '[sprite index=0 file="a.png" rect=[0,0,0,0] ]'
+
+matches = re.finditer(regex, a)
+result = []
+pre = []
+for matchNum, match in enumerate(matches, start=1):
+    
+    m = match.group().strip('"')
+    result.append(m)
+
+    print(m)
+    #print ("在{start}-{end}找到匹配{matchNum}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group()))
+    
+    # for groupNum in range(0, len(match.groups())):
+    #     groupNum = groupNum + 1
+    #     g = match.group()
+        #print(g)
+        #print ("在{start}-{end}找到组{groupNum}: {group}".format(groupNum = groupNum, start = match.start(groupNum), end = match.end(groupNum), group = match.group(groupNum)))
+
+print(result)
+file = open("out.txt","w",encoding="utf-8")
+for element in result:
+    #print(element)
+    file.write(element + "\n")
+file.close()
