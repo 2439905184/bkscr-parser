@@ -1,8 +1,12 @@
-a = "[sprite index=0 file='a.png' rect=[0,0,0,0]]"
+a = "[sprite index=0 rect=[0,0,0,0] file='a.png']" # [addto index=0 pos=[0,2]]
 start = 0 #开始位置 为0
 current = 0 #当前位置 
 
 tokens = []
+# 是否遇到数组参数
+array_meet = False
+array_closed = False
+
 def eatNext()->str:
     global current
     current += 1
@@ -20,7 +24,11 @@ def getMacro():
     value = a[start +1 : current]
     #print(value)
     tokens.append(value)
-    pass
+
+def addToken(type):
+    global start
+    global current
+    text = a[start,current]
 
 def getParamName():
     global current
@@ -37,23 +45,30 @@ def getParamName():
 def getParamValue():
     global current
     global start
+    global array_meet
+    global array_closed
+    array_meet = False
+    array_closed = False
     # 处理rect_t 长度为4的整数型数组 范围型
     if a[current] == "[":
+        # array_meet == True
         while peek() != "]" and not isAtEnd():
             eatNext()
         if isAtEnd():
             print("第" + str(current) + "列处，参数不完整")
             return
-        value:str = a[start+1 : current+1]
+        value:str = a[start+2 : current]
+        v2 = value.split(",")
+        for param in v2:
+            tokens.append(param)
         #print("范围型的值为",value)
-        tokens.append(value)
     elif a[current].isdigit():
-        while peek() != " " and not isAtEnd():
+        while peek() != ' ' and not isAtEnd():
             eatNext()
         if isAtEnd():
             print("第" + str(current) + "列处，参数不完整")
             return
-        value:str = a[start+1 : current+1]
+        value:str = a[start+1 : current]
         #print("int型的值为",value)
         tokens.append(value)
     elif a[current] == "'":
@@ -80,17 +95,18 @@ def isAtEnd():
 
 def scanToken():
     c = eatNext()
-    if c == "[":
-        tokens.append("多行宏开始")
+    if c == "[":#and current == 1:
+        #tokens.append("多行宏开始")
         getMacro()
     elif c == "]":
-        tokens.append("多行宏结束")
+        pass
+        #tokens.append("多行宏结束")
     elif c == " ": pass
     elif c == "=":
         getParamValue()
     else:
         getParamName()
-        pass
+
 # 扫描标记
 def scanTokens():
     global start
