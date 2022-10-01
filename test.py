@@ -158,9 +158,12 @@ def 分析标记():
             value = code[split_start+1 : current]
             #print(value)
             tokens.append(value)
-        elif c == "[":
-            #getArray()
-            pass
+        elif c == "/":
+            if readNext() == "/":
+                pass
+            else:
+                print("注释代码编写错误,列: ",current)
+                break
     print(tokens)
 #获得参数名1()
 分析标记()
