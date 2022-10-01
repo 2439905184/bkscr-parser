@@ -1,4 +1,5 @@
 *.pyc
-__pycache__
-out.txt
 *.code-workspace
+out.txt
+__pycache__/
+compile_out/
