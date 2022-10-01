@@ -1,61 +1,91 @@
-lines = ["*main","@sprite index=0 file='a.png' "]
+code = "@sprite index=0"
+start = 0
+current = 1
+
+# def readBack():
+#     global current
+#     current -= 1
+#     return code[current-1]
+
+# def readNext():
+#     pass
+
+# equal_index = 0
+# for char in code:
+#     if char == "=":
+#         equal_index = current
+#         print(equal_index)
+#         # if readBack() != " ":
+#         #     paramName = code[current:equal_index]
+#         #     print(paramName)
+#     if char == " ":
+#         print(current)
+#     current += 1
+
+a = "@bg abc=1"
+split_start = 0
+split_end = 0
+start = 0
+current = 0
+equals_index = 0
 tokens = []
-def addToken(type):
-    tokens.append(type)
+# 用于归位的索引
+priv_index = 0
+def readBack():
+    global current
+    current -= 1
+    return a[current -1]
 
-for line in lines:
-    临时标记 = ""
-    临时变量 = ""
-    for char in line:
-        if char == "*":
-            addToken("标签")
-            临时标记 = "标签"
-        if char == "@":
-            addToken("单行宏")
-            临时标记 = "单行宏"
+def readNext():
+    global start
+    global current
+    current += 1
+    return a[current -1]
 
-    if 临时标记 == "标签":
-        for char in line:
-            if char == " ":
-                pass
-            else:
-                临时变量 += char
-        addToken(临时变量)
-    # 处理单行宏
-    elif 临时标记 == "单行宏":
-        预处理 = []
-        space_times  = 0 # 空格出现的次数
-        for index,char in enumerate(line):
-            if char == " ":
-                space_times += 1
-                if space_times == 1:
-                    预处理.append(临时变量)
-                    临时变量 = ""
-                if space_times == 2:
-                    预处理.append(临时变量)
-                    临时变量 = ""
-                if space_times == 3:
-                    预处理.append(临时变量)
-                    临时变量 = ""
-            else:
-                临时变量 += char
-                    #print(index)
-        # 进行二次处理
-        新处理 = []
-        for element in 预处理:
-            if "=" in element:
-                分词 = element.split("=")
-                新处理.append(分词[0])
-                新处理.append("=")
-                新处理.append(分词[1])
-            else:
-                新处理.append(预处理[0])
-        print("预处理",预处理)
-        print("新处理",新处理)
-        for element in 新处理:
-            addToken(element)
-print("分词结果",tokens)
-file = open("out.txt","w",encoding="utf-8")
-for element in tokens:
-    file.write(element + "\n")
-file.close()
+def isAtStart():
+    global current
+    global start
+    if current < start:
+        return True
+    else:
+        return False
+
+def isAtEnd():
+    global current
+    global start
+    if current >= len(a):
+        return True
+    else: 
+        return False
+
+def peekBack():
+    global current
+    # if isAtStart(): 
+    #     return "\0"
+    return a[current-1]
+
+while not isAtEnd(): 
+    c = readNext()
+    #print(c)
+    if c == "=":
+        equals_index = current -1
+        priv_index = current
+        while peekBack() != " " and not isAtStart():
+            readBack()
+        if isAtStart():
+            print("越界")
+            break
+        #print(current)
+        split_start = equals_index - len(a)
+        split_end = current - len(a)
+        revert_str = a[split_start - 1 : split_end -1 :-1]
+        #print(revert_str)
+        s = revert_str[::-1]
+        #print(s)
+        #print(s == "abc")
+        tokens.append(s)
+        # 索引归位
+        current = priv_index
+# 开始位置是实际位置-1 结束位置是实际位置
+#print(a[-3:-7:-1])
+print(tokens)
