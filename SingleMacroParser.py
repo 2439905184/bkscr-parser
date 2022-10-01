@@ -1,3 +1,4 @@
+# 基于逐字符分析的单行宏词法分析器
 import re
 def parse(code:str)->list:
     #code = "@addto index=1280 "
