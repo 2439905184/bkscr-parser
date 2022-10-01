@@ -1,2 +1,2 @@
-@addto index=0 target=basic_layer p3=4//aaa
-@ch index=1
+@addto index=0 target=basic_layer pos=[2,5]//aaa
+@addto index=320 target=basic_layer pos=[5,8]//aaa

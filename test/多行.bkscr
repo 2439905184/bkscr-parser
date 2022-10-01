@@ -1,0 +1,1 @@
+[sprite index=0 rect=[0,0,0,0] file="a.png"] [addto index=0 target=basic_layer] //注释commant
