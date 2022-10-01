@@ -127,11 +127,24 @@ def 分析标记():
         for v in ar:
             tokens.append(v)
 
+    def getParamName()->str:
+        split_start = equals_index - len(code)
+        split_end = current - len(code)
+        revert_str = code[split_start - 1 : split_end -1 :-1]
+        s = revert_str[::-1]
+        return s
+
+    def getParamValue()->str:
+        split_start = equals_index
+        value = code[split_start+1 : current]
+        return value
+        
     while not isAtEnd(): 
         c = readNext()
         #print(c)
         if c == "@":
             getMacro()
+
         elif c == "=":
             equals_index = current -1
             priv_index = current
@@ -141,11 +154,7 @@ def 分析标记():
             if isAtStart():
                 print("越界,at: ",current)
                 break
-            split_start = equals_index - len(code)
-            split_end = current - len(code)
-            revert_str = code[split_start - 1 : split_end -1 :-1]
-            s = revert_str[::-1]
-            tokens.append(s)
+            tokens.append(getParamName())
             # 索引归位
             current = priv_index
             # 取参数值
@@ -154,10 +163,8 @@ def 分析标记():
             if isAtEnd():
                 print("扫描器出错,在宏代码: " + current + "列处")
                 break
-            split_start = equals_index
-            value = code[split_start+1 : current]
-            #print(value)
-            tokens.append(value)
+            tokens.append(getParamValue())
+
         elif c == "/":
             if readNext() == "/":
                 pass
