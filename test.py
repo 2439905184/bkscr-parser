@@ -59,7 +59,7 @@ def 获得参数名1():
     print(tokens)
 
 def 分析标记():
-    code = "@addto index=1 pos=[0,0] //这是注释comment"
+    code = "@addto index=16568 pos=[0,0] //这是注释comment"
     split_start = 0
     split_end = 0
     start = 0
@@ -96,8 +96,14 @@ def 分析标记():
             return False
 
     def peekBack():
+        nonlocal current
         return code[current-1]
-    
+
+    def peekNext():
+        nonlocal current
+        current += 1
+        return code[current]
+
     def getMacro():
         # 原理就是 "  " 作为字符串两端，获得这两个符号的位置，并提取子字符串
         while peekNext() != ' ' and not isAtEnd():
@@ -109,33 +115,52 @@ def 分析标记():
         #print(value)
         tokens.append(value)
 
+    def getArray():
+        while peekNext() != "]" and not isAtEnd():
+            readNext()
+        if isAtEnd():
+            print("第" + str(current) + "列处，数组代码不完整")
+            return
+        value:str = code[start : current]
+        print("数组型的值为",value)
+        ar = value.split(",")
+        for v in ar:
+            tokens.append(v)
+
     while not isAtEnd(): 
         c = readNext()
         #print(c)
         if c == "@":
             getMacro()
-
-        if c == "=":
+        elif c == "=":
             equals_index = current -1
             priv_index = current
+            # 取参数名字 回溯法
             while peekBack() != " " and not isAtStart():
                 readBack()
             if isAtStart():
-                print("越界")
+                print("越界,at: ",current)
                 break
-            #print(current)
             split_start = equals_index - len(code)
             split_end = current - len(code)
             revert_str = code[split_start - 1 : split_end -1 :-1]
-            #print(revert_str)
             s = revert_str[::-1]
-            #print(s)
-            #print(s == "abc")
             tokens.append(s)
             # 索引归位
             current = priv_index
-        
+            # 取参数值
+            while peekNext() != " " and not isAtEnd():
+                readNext()
+            if isAtEnd():
+                print("扫描器出错,在宏代码: " + current + "列处")
+                break
+            split_start = equals_index
+            value = code[split_start+1 : current]
+            #print(value)
+            tokens.append(value)
+        elif c == "[":
+            #getArray()
+            pass
     print(tokens)
-    pass
-获得参数名1()
-#分析标记()
+#获得参数名1()
+分析标记()
