@@ -1,1 +1,1 @@
-﻿@sprite index=0 file="hello.png"
+﻿@addto index=0 target=basic_layer

@@ -1,5 +1,6 @@
 def parse(code:str)->list:
-    code = "@addto index=1280 p2=6\n"
+    #code = "@addto index=1280 "
+    #=1
     current = 0
     end = len(code) - 1
     tokens = []
@@ -11,6 +12,8 @@ def parse(code:str)->list:
 
     action = "scanParamName" #scanParamValue
     #print("启动为",action)
+    # 适用于没有换行符的解析 末尾字母参数
+    tail = ""
     for index,char in enumerate(code):
         if char == "@":
             while peekNext() != " " and index != end:
@@ -28,21 +31,29 @@ def parse(code:str)->list:
                 vc = code[sp_start:current]
                 tokens.append(vc)
                 #print(vc)
-                #print("切换为",action)
+                print("切换为",action)
 
         if char == "=" and action == "scanParamValue":
-            vc = ""
             while peekNext() != " " and current != end:
-                #print(code[current])
-                vc += code[current]
-            #print(vc)
-            tokens.append(vc)
-            if code[current] == "\n":
-                break
-            if code[current] == " " and current == end:
-                break
-            if code[current] == " ":
+                print(code[current])
+                tail += code[current]
+            if code[current] == " " and current != end:
                 action = "scanParamName"
-                #print("切换为",action)
+                print("切换为",action)
+            elif code[current] == " " and current == end:
+                print("参数的末尾是空格 且代码已结束")
+                break
+        # 适用于没有换行符的解析 末尾字母参数
+        if index == end and char != "\n":
+            tail += code[end]
+            tt = list(tail)
+            del tt[0]
+            rs = "".join(tt)
+            print("换回来",rs)
+            print("添加尾巴",rs)
+            tokens.append(rs)
+            break
+        if char == "\n":
+            break
     #print(tokens)
     return tokens
