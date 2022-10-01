@@ -23,7 +23,10 @@ class Scanner:
 
     def addToken(self,type):
         self.tokens.append(type)
+    # object 字面量 value
+    def addToken(self,type,object):
 
+        pass
     def scanToken(self):
         char = self.nextChar()
         print(char)
@@ -32,7 +35,7 @@ class Scanner:
         elif char == "]":
             self.addToken(tokentype.TokenType.右中括号)
         elif char == "*":
-            self.addToken(tokentype.TokenType.标签)
+            self.addToken(tokentype.TokenType.标签,)
         elif char == " ":pass
         else:
             #if char is str:

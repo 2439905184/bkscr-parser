@@ -4,7 +4,8 @@
     },
     "name": "test",
     "script": {
-        "main.bkscr": 0
+        "main.bkscr": 0,
+        "单行.bkscr": 0
     },
     "source": {
     },

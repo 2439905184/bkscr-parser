@@ -1,2 +1,3 @@
 ﻿*main
-[sprite file="a.png" index=2][sprite file="b.png" index=2] //注释
+[sprite file='a.png' index=2 rect=[0,0,0,0]][sprite file="a.png" index=2 rect=[0,0,0,0]] //注释
+@addto index=0 target=basic_layer
