@@ -69,12 +69,13 @@ def replaceMacro(codeArray:list):
     regex = r"\[\w+\s"
     subst = "@sprite "
 
-    cc = re.sub(regex, subst, code)
+    #cc = re.sub(regex, subst, code)
 
     
 
 # 用于分词的关键函数 verbose:是否输出详细信息
 allMacros = []
+# 每次返回解析后的一行的数组分词
 def parse(code:str,scanLine:int,verbose:bool)->list:
     if checkHasComment(code):
         code = deleteComment(code)
@@ -84,7 +85,7 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     # print("找到的所有结果",allMacros,len(allMacros))
     # 备份
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
-    regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)"
+    regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)|(?P<closeMacro>\[\w+\])(?#紧凑结构的宏)"
     
     # 备注：如果顺序是乱的，还需要在进行一个自我构造空函数用于处理顺序问题
     # 顺序应该为 <macroName> <paramName> <paramValue> <paramName> <paramValue>
@@ -111,8 +112,14 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
             result.append(group["intArrayValue4"])
         elif group.get("var") != None:
             result.append(group["var"])
+        elif group.get("closeMacro") != None:
+            oldMacro:str = group["closeMacro"].strip("\[|\]")
+            newMacroList = ["@"]
+            newMacroList.append(oldMacro)
+            newMacro:str = "".join(newMacroList)
+            result.append(newMacro)
         # print(m)
         #result.append(m)
-    print("结果",result)
-    #replaceMacro(result)
+    # finalResult:str = "".join(result)
+    print("分词结果",result)
     return result

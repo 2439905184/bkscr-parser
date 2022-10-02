@@ -3,3 +3,7 @@
 [sprite index=0 file="11.png"] [addto index=0 target=basic_layer pos=[0,20]]
 // 测试int[2] 带有空格
 [sprite index=0 file="11.png"] [addto index=0 target=basic_layer pos=[  0  ,  20  ]]
+// closeMacro单元测试
+[if]
+[endif]
+[p]
