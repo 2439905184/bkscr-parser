@@ -1,1 +1,5 @@
-[sprite index=0 rect=[0,0,0,0] file="a.png"] [addto index=0 target=basic_layer] //注释commant
+[sprite index=0 file="11.png"] [addto index=0 target=basic_layer] // 注释comment
+// 测试int[2] 标准格式
+[sprite index=0 file="11.png"] [addto index=0 target=basic_layer pos=[0,20]]
+// 测试int[2] 带有空格
+[sprite index=0 file="11.png"] [addto index=0 target=basic_layer pos=[  0  ,  20  ]]

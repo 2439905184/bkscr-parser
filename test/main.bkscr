@@ -1,3 +1,5 @@
 ﻿*main
-[sprite file='a.png' index=2 rect=[0,0,0,0]][sprite file="a.png" index=2 rect=[0,0,0,0]] //注释
-@addto index=0 target=basic_layer
+[sprite file='11.jpg' index=0]
+@addto index=0 target=basic_layer pos=[ 0, 20 ]
+[if exp="a==1"]
+[endif] [a]
