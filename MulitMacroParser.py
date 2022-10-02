@@ -61,7 +61,7 @@ def getMacro(code,line,verbose)->list:
         pass
     return bufferMacro
 
-def replaceMacro(code:str):
+def replaceMacro(codeArray:list):
     # 匹配 ' ' 前面的宏名称 或者 ']' 前面的宏名
     # example1 [sprite index=1] 中匹配到sprite字符串
     # example2 [endif] 中匹配到 endif字符串
@@ -81,14 +81,38 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     code = preProcessArray(code)
     macros = getMacro(code,scanLine,verbose)
     allMacros.append(macros)
-    print("找到的所有结果",allMacros,len(allMacros))
-    #regex = r"((?<=\[)\w+)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
+    # print("找到的所有结果",allMacros,len(allMacros))
+    # 备份
+    #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
+    regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)"
     
-    # matches = re.finditer(regex, code)
-    # result = []
-    # for matchNum, match in enumerate(matches, start=1):
-    #     m = match.group()#.strip('"')
-    #     result.append(m)
-    # #print("结果",result)
-    result = code
+    # 备注：如果顺序是乱的，还需要在进行一个自我构造空函数用于处理顺序问题
+    # 顺序应该为 <macroName> <paramName> <paramValue> <paramName> <paramValue>
+    # 其中：<intValue> <stringValue1> <stringValue2> <intArrayValue2> <intArrayValue4> <var> 与顺序无关，只需要一个参数对应一个值
+    matches = re.finditer(regex, code)
+    result = []
+    for matchNum, match in enumerate(matches, start=1):
+        group = match.groupdict()#.strip('"')
+        if group.get("macroName") != None:
+            oldMacro = group["macroName"]
+            newMacro = oldMacro.replace("[","@")
+            result.append(newMacro)
+        elif group.get("paramName") != None:
+            result.append(group["paramName"])
+        elif group.get("intValue") != None:
+            result.append(group["intValue"])
+        elif group.get("stringValue1") != None:
+            result.append(group["stringValue1"])
+        elif group.get("stringValue2") != None:
+            result.append(group["stringValue2"])
+        elif group.get("intArrayValue2") != None:
+            result.append(group["intArrayValue2"])
+        elif group.get("intArrayValue4") != None:
+            result.append(group["intArrayValue4"])
+        elif group.get("var") != None:
+            result.append(group["var"])
+        # print(m)
+        #result.append(m)
+    print("结果",result)
+    #replaceMacro(result)
     return result
