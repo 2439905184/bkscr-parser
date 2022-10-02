@@ -24,17 +24,71 @@ def preProcessArray(code)->str:
     result = re.sub(regex,"",code)
     return result
 
-# 用于分词的关键函数
-def parse(code:str)->list:
+# 在分析完成之后，替换[sprite -> @sprite 
+# example: [sprite pos=[0,2]] 最简格式，所以sprite命令和第一个参数之间有且至少有一个空格
+# codeArray是已经处理完成的数组
+# example: ['sprite', 'pos', '[0,2]']
+# 使用正则可能难以处理，这里使用逐字符扫描器土法炮制
+# [sprite index=0 pos=[0,2]]
+# 先处理原始字符串里的[sprite ，这里把 '[' 和 ' ' 之间的字符视为字符串
+# 获得宏名称
+def getMacro(code,line,verbose)->list:
+    bufferMacro = []
+    #bufferCloseMacro = []
+    regex = r"(?P<openMacro>\[\w+\s)(?#取形如:'[bg '的字符串)|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)"
+    matches = re.finditer(regex,code)
+    for matchNum, match in enumerate(matches):
+        group = match.groupdict()
+        if group.get("openMacro") != None:
+            if verbose:
+                print(">>>找到带有空格的宏，开始编译...")
+            oldValue = group["openMacro"]
+            newValue = oldValue.replace("[","@")
+            if verbose:
+                print("行:",line,">>>",oldValue,"-> ",newValue)
+            bufferMacro.append(newValue)
+        elif group.get("closeMacro") != None:
+            if verbose:
+                print(">>>找到紧凑的宏，开始编译...")
+            oldValue = group["closeMacro"]
+            newValue = oldValue.replace("[","@")
+            if verbose:
+                print("行:",line,">>>",oldValue,"-> ",newValue)
+            bufferMacro.append(newValue)
+        # print("行:",line,"找到的组","-> ",group)
+    if verbose:
+        # print("结果",line,"-> ",bufferMacro)
+        pass
+    return bufferMacro
+
+def replaceMacro(code:str):
+    # 匹配 ' ' 前面的宏名称 或者 ']' 前面的宏名
+    # example1 [sprite index=1] 中匹配到sprite字符串
+    # example2 [endif] 中匹配到 endif字符串
+    macro_regex = r"\w+(?=\s)|\w+(?=\])"
+    regex = r"\[\w+\s"
+    subst = "@sprite "
+
+    cc = re.sub(regex, subst, code)
+
+    
+
+# 用于分词的关键函数 verbose:是否输出详细信息
+allMacros = []
+def parse(code:str,scanLine:int,verbose:bool)->list:
     if checkHasComment(code):
         code = deleteComment(code)
     code = preProcessArray(code)
-    regex = r"((?<=\[)\w+)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
+    macros = getMacro(code,scanLine,verbose)
+    allMacros.append(macros)
+    print("找到的所有结果",allMacros,len(allMacros))
+    #regex = r"((?<=\[)\w+)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
     
-    matches = re.finditer(regex, code)
-    result = []
-    for matchNum, match in enumerate(matches, start=1):
-        m = match.group()#.strip('"')
-        result.append(m)
-    #print("结果",result)
+    # matches = re.finditer(regex, code)
+    # result = []
+    # for matchNum, match in enumerate(matches, start=1):
+    #     m = match.group()#.strip('"')
+    #     result.append(m)
+    # #print("结果",result)
+    result = code
     return result
