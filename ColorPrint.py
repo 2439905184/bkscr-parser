@@ -21,11 +21,11 @@ def print_compile(*args):
 
 # 仅输出一次详细输出提示，在开始所有详细输出之前调用一次
 def print_verbose_hint():
-    print("\033[0;41;40m详细输出\033[0m")
+    print("\033[1;31;40m详细输出\033[0m")
 
 # 仅输出一次编译开始提示，在所有编译开始之前调用一次
 def print_compile_hint():
-    print("\033[0;41;40m开始编译\033[0m")
+    print("\033[1;31;40m开始编译\033[0m")
 
 def test():        
     print_verbose_hint()
