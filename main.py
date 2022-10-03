@@ -2,10 +2,14 @@ import os
 import sys
 import SingleMacroParser as sp
 import MulitMacroParser as mp
-
+import ColorPrint
 arg = sys.argv[1]
 print("输入文件",arg)
 filein = os.path.split(arg)[1]
+if len(sys.argv) == 3:
+    argv_verbose = sys.argv[2]
+else:
+    argv_verbose = None
 # 注意 此处默认使用utf-8 with bom 编码打开，因为bkengine的脚本编码默认就是这种的，麻了，直接全部转utf-8格式
 srcfile = open(arg,"r",encoding="utf-8")
 lines = srcfile.readlines()
@@ -20,6 +24,14 @@ print("输出文件",fileout)
 # file_name = arg
 out = open("compile_out/" + fileout,"w+",encoding="utf-8")
 currentScanLine = 0
+
+if argv_verbose == "verbose":
+    verbose_mode = True
+else:
+    verbose_mode = False
+if verbose_mode:
+    ColorPrint.print_verbose_hint()
+    ColorPrint.print_compile_hint()
 # 逐行扫描
 for index,line in enumerate(lines):
     currentScanLine = index + 1
@@ -30,7 +42,7 @@ for index,line in enumerate(lines):
     #     #print("缓冲区",buffer_line)
     #     result.append(buffer_line)
     if line[0] == "[":
-        lineToken:list = mp.parse(code=line, scanLine=currentScanLine, verbose=False)
+        lineToken:list = mp.parse(code=line, scanLine=currentScanLine, verbose=verbose_mode)
         for element in lineToken:
             #print(currentScanLine, buffer_array)
             out.write(element + "\n")

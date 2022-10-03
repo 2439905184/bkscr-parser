@@ -1,40 +1,44 @@
 # 基于正则表达式的多行宏函数的词法分析器
 import re
+import ColorPrint
 # 检查是否有注释
 def checkHasComment(code:str,verbose:bool)->bool:
     bufferString = ""
-    for char in code:
+    for char in code: # 这里的code是一行代码
         bufferString += char
-    if bufferString == "//":
+    if "//" in bufferString:
         if verbose:
-            print(code,"---","有注释")
+            ColorPrint.print_verbose("检测到有注释",code)
         return True
     else:
         if verbose:
-            print(code,"---","没有注释")
+            ColorPrint.print_verbose("没有检测到注释",code)
         return False
 
 # 检查当前行首尾是否有空格
-def checkHasSpace(code:str,verbose:bool) -> bool:
+def checkHasSpace(code:str,verbose: bool) -> bool:
     if code[0] == " " and code[len(code)-1] == " ":
         if verbose:
-            print(code,"---","当前行首尾有空格")
+            ColorPrint.print_verbose("当前行首尾有空格",code)
         return True
     else:
         if verbose:
-            print(code,"---","当前行首尾没有空格")
+            ColorPrint.print_verbose("当前行首尾没有空格",code)
         return False
-# 检查当前行的宏直接是否有空格
-def checkHasSpace_Between_Macro(code):
+
+# 检查当前行的宏之间是否有空格 [macro] [macro]
+def checkHasSpace_Between_Macro(code,verbose: bool):
     regex = r"(?<=\])\s+(?=\[)"
     check_result = re.match(regex,code)
     if check_result != None:
+        ColorPrint.print_verbose("宏之间有空格",code)
         return True
     else:
+        ColorPrint.print_verbose("宏之间没有空格",code)
         return False
 
 # 检查当前行的宏的数组参数值是否包含空格
-def checkIsOpenArray(code) -> bool:
+def checkIsOpenArray(code,verbose: bool) -> bool:
     regex = r"(?<=\=\[)(?<=\[)\s+|\s+(?=,)|(?<=,)\s+|\s+(?=\])"
     if re.match(regex,code) != None:
         return True
@@ -43,7 +47,7 @@ def checkIsOpenArray(code) -> bool:
 
 # 去除首尾注释字符串 \s\s//\s\s
 # example //这是注释[macro]
-def deleteComment(code) -> str:
+def deleteComment(code,verbose: bool) -> str:
     #匹配模式：多个空格//后面的所有字符内容 除了\n换行符
     regex = r"\s+//[^\n]*"
     result = re.sub(regex,"",code)
@@ -56,7 +60,7 @@ def delete_space_at_head_or_tail(code) -> str:
     result = re.sub(regex,"",code)
     return result
 
-# 去除两宏直接的多余空格
+# 去除两宏之间的多余空格
 # 意思是查找 ]之后的多个空格并且找到[之前的多个空格 查找结果为 ]\s\s\s[ 里面的所有\s符号（不包括 '][' 符号)
 def delete_space_between_Macro(code) -> str:
     regex = r"(?<=\])\s+(?=\[)"
@@ -70,61 +74,19 @@ def preProcessArray(code) -> str:
     result = re.sub(regex,"",code)
     return result
 
-# 在分析完成之后，替换[sprite -> @sprite 
-# example: [sprite pos=[0,2]] 最简格式，所以sprite命令和第一个参数之间有且至少有一个空格
-# codeArray是已经处理完成的数组
-# example: ['sprite', 'pos', '[0,2]']
-# 使用正则可能难以处理，这里使用逐字符扫描器土法炮制
-# [sprite index=0 pos=[0,2]]
-# 先处理原始字符串里的[sprite ，这里把 '[' 和 ' ' 之间的字符视为字符串
-# 获得宏名称
-def getMacro(code,line,verbose)->list:
-    bufferMacro = []
-    #bufferCloseMacro = []
-    regex = r"(?P<openMacro>\[\w+\s)(?#取形如:'[bg '的字符串)|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)"
-    matches = re.finditer(regex,code)
-    for matchNum, match in enumerate(matches):
-        group = match.groupdict()
-        if group.get("openMacro") != None:
-            if verbose:
-                print(">>>找到带有空格的宏，开始编译...")
-            oldValue = group["openMacro"]
-            newValue = oldValue.replace("[","@")
-            if verbose:
-                print("行:",line,">>>",oldValue,"-> ",newValue)
-            bufferMacro.append(newValue)
-        elif group.get("closeMacro") != None:
-            if verbose:
-                print(">>>找到紧凑的宏，开始编译...")
-            oldValue = group["closeMacro"]
-            newValue = oldValue.replace("[","@")
-            if verbose:
-                print("行:",line,">>>",oldValue,"-> ",newValue)
-            bufferMacro.append(newValue)
-        # print("行:",line,"找到的组","-> ",group)
-    if verbose:
-        # print("结果",line,"-> ",bufferMacro)
-        pass
-    return bufferMacro
-# todo
-def replaceMacro(codeArray:list):
-    # 匹配 ' ' 前面的宏名称 或者 ']' 前面的宏名
-    # example1 [sprite index=1] 中匹配到sprite字符串
-    # example2 [endif] 中匹配到 endif字符串
-    macro_regex = r"\w+(?=\s)|\w+(?=\])"
-    regex = r"\[\w+\s"
-    subst = "@sprite "
-    #cc = re.sub(regex, subst, code)
-
-# 用于分词的关键函数 verbose:是否输出详细信息
 allMacros = []
 # 每次返回解析后的一行的数组分词
 def parse(code:str,scanLine:int,verbose:bool)->list:
+    '''
+    用于分词的关键函数 
+    verbose:是否输出详细信息
+    '''
     # 预处理
     if verbose:
-        print("传入的原始字符串 ","->",code)
+        ColorPrint.print_verbose("传入的原始字符串",code)
     if checkHasComment(code,verbose):
         code = deleteComment(code,verbose)
+        #ColorPrint.print_verbose("删除注释后的字符串",code)
     if checkHasSpace(code,verbose):
         code = delete_space_at_head_or_tail(code,verbose)
     if checkHasSpace_Between_Macro(code,verbose):
@@ -135,7 +97,8 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     #allMacros.append(macros)
     # print("找到的所有结果",allMacros,len(allMacros))
     if verbose:
-        print("预处理完毕的字符串","->",code)
+        ColorPrint.print_compile("预处理完毕的字符串",code)
+        # print(,"->",code)
     # 备份
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)|(?P<closeMacro>\[\w+\])(?#紧凑结构的宏)"
