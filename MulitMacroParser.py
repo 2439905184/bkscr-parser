@@ -31,23 +31,32 @@ def checkHasSpace_Between_Macro(code,verbose: bool):
     regex = r"(?<=\])\s+(?=\[)"
     check_result = re.match(regex,code)
     if check_result != None:
-        ColorPrint.print_verbose("宏之间有空格",code)
+        if verbose:
+            ColorPrint.print_verbose("宏之间有空格",code)
         return True
     else:
-        ColorPrint.print_verbose("宏之间没有空格",code)
+        if verbose:
+            ColorPrint.print_verbose("宏之间没有空格",code)
         return False
 
 # 检查当前行的宏的数组参数值是否包含空格
 def checkIsOpenArray(code,verbose: bool) -> bool:
     regex = r"(?<=\=\[)(?<=\[)\s+|\s+(?=,)|(?<=,)\s+|\s+(?=\])"
-    if re.match(regex,code) != None:
-        return True
-    else:
-        return False
+    matches = re.finditer(regex,code)
+    for matchNum, match in enumerate(matches):
+        if match != None:
+            if verbose:
+                ColorPrint.print_verbose("数组值之间包含空格",code)
+            return True
+        else:
+            if verbose:
+                ColorPrint.print_verbose("数组值之间不包含空格",code)
+            return False
+    #return False
 
 # 去除首尾注释字符串 \s\s//\s\s
 # example //这是注释[macro]
-def deleteComment(code,verbose: bool) -> str:
+def deleteComment(code) -> str:
     #匹配模式：多个空格//后面的所有字符内容 除了\n换行符
     regex = r"\s+//[^\n]*"
     result = re.sub(regex,"",code)
@@ -69,7 +78,7 @@ def delete_space_between_Macro(code) -> str:
 
 # 将数组参数里面的空格化为1 解释：# 匹配[后面的所有空格 或者,前面的所有空格 或者，后面的所有空格 或者]前面的所有空格并替换为""
 # example:[macro param=[\s\s\s800\s\s\s,\s\s\s600\s\s\s]] -> [macro param=[800,600]]
-def preProcessArray(code) -> str:
+def delete_space_between_Array(code) -> str:
     regex = r"(?<=\[)\s+|\s+(?=,)|(?<=,)\s+|\s+(?=\])"
     result = re.sub(regex,"",code)
     return result
@@ -84,16 +93,16 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     if verbose:
         ColorPrint.print_verbose("传入的原始字符串",code)
     if checkHasComment(code,verbose):
-        code = deleteComment(code,verbose)
+        code = deleteComment(code)
         ColorPrint.print_verbose("删除注释后的字符串",code)
     if checkHasSpace(code,verbose):
-        code = delete_space_at_head_or_tail(code,verbose)
+        code = delete_space_at_head_or_tail(code)
         ColorPrint.print_verbose("删除头尾空格后的字符串",code)
     if checkHasSpace_Between_Macro(code,verbose):
-        code = delete_space_between_Macro(code,verbose)
+        code = delete_space_between_Macro(code)
         ColorPrint.print_verbose("删除宏之间空格后的字符串",code)
     if checkIsOpenArray(code,verbose):
-        code = preProcessArray(code,verbose)
+        code = delete_space_between_Array(code)
         ColorPrint.print_verbose("删除数组之间空格后的字符串",code)
     if verbose:
         ColorPrint.print_compile("预处理完毕的字符串",code)
@@ -122,7 +131,6 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
             result.append(newMacro)
         else:
             result.append(group_value)
-    # finalResult:str = "".join(result)
     if verbose:
         ColorPrint.print_compile("编译结果",str(result))
     return result
