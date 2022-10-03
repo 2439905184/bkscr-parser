@@ -13,7 +13,7 @@ def print_compile(*args):
     :args: 可变参数[0]是代码行，[1]是输出提示
     '''
     #to = args[0] + "\033[0;32;40m"  + " -> " + "\033[0m" + args[1]
-    source_in = "\033[0;34;40m@bg\033[0m"
+    source_in = "\033[0;34;40m"+ args[0] + "\033[0m"
     arrow = "->"
     compile_out = "\033[0;32;40m"+ args[1] + "\033[0m"
     out = source_in + " " + arrow + " " + compile_out
@@ -30,9 +30,9 @@ def print_compile_hint():
 def test():        
     print_verbose_hint()
     for i in range(20):
-        print_verbose("@bg","提示")
+        print_verbose("@init","提示")
     print_compile_hint()
     for i in range(20):
-        print_compile("@bg","提示")
+        print_compile("@sprite","提示")
 
-test()
+#test()
