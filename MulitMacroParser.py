@@ -113,6 +113,8 @@ allMacros = []
 # 每次返回解析后的一行的数组分词
 def parse(code:str,scanLine:int,verbose:bool)->list:
     # 预处理
+    if verbose:
+        print("传入的原始字符串 ","->",code)
     if checkHasComment(code):
         code = deleteComment(code)
     if checkHasSpace(code):
@@ -124,22 +126,23 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     #macros = getMacro(code,scanLine,verbose)
     #allMacros.append(macros)
     # print("找到的所有结果",allMacros,len(allMacros))
-   
+    if verbose:
+        print("预处理完毕的字符串","->",code)
     # 备份
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)|(?P<closeMacro>\[\w+\])(?#紧凑结构的宏)"
-    regex = r"(?# [macro )(?P<macroName>\[\w+\s)|(?# =前面的paramName)(?P<macroParamName>\S+(?=\=))|(?# =后面的数字)(?P<intValue>(?<=\=)\d+)|(?# int[2])(?P<arrayLength2>(?<=\=)\[.,.\])|(?#int[4])((?<=\=))\[.,.,.,.\]|(?# =后面的变量参数)(?P<varValue>(?<=\=)\w+)|(?#双引号字符串)((?<=\=)\".+\")|(?#单引号字符串)((?<=\=)\'.+\')|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)|(=)"
+    regex = r"(?P<macroName>\[\w+\s)|(?# =前面的paramName)(?P<macroParamName>\S+(?=\=))|(?# =后面的数字)(?P<intValue>(?<=\=)\d+)|(?# int[2])(?P<arrayLength2>(?<=\=)\[.,.\])|(?#int[4])((?<=\=))\[.,.,.,.\]|(?# =后面的变量参数)(?P<varValue>(?<=\=)\w+)|(?#双引号字符串)((?<=\=)\".+\")|(?#单引号字符串)((?<=\=)\'.+\')|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)|(=)"
     # 备注：如果顺序是乱的，还需要在进行一个自我构造空函数用于处理顺序问题
     # 顺序应该为 <macroName> <paramName> <paramValue> <paramName> <paramValue>
     # 其中：<intValue> <stringValue1> <stringValue2> <intArrayValue2> <intArrayValue4> <var> 与顺序无关，只需要一个参数对应一个值
     matches = re.finditer(regex, code)
     result = []
     for matchNum, match in enumerate(matches, start=1):
-        group = match.groupdict()#.strip('"')
+        group = match.groupdict()
         group_value = match.group()
         if group.get("macroName") != None:
             oldMacro = group["macroName"]
-            newMacro = oldMacro.replace("[","@")
+            newMacro = oldMacro.replace("[","@").strip(" ")
             result.append(newMacro)
         elif group.get("closeMacro") != None:
             oldMacro:str = group["closeMacro"].strip("\[|\]")
@@ -167,5 +170,5 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
         # print(m)
         #result.append(m)
     # finalResult:str = "".join(result)
-    print("分词结果",result)
+    print("分词结果","->",result)
     return result
