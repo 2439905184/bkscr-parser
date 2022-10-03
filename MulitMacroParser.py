@@ -1,20 +1,28 @@
 # 基于正则表达式的多行宏函数的词法分析器
 import re
 # 检查是否有注释
-def checkHasComment(code:str)->bool:
+def checkHasComment(code:str,verbose:bool)->bool:
     bufferString = ""
     for char in code:
         bufferString += char
     if bufferString == "//":
+        if verbose:
+            print(code,"---","有注释")
         return True
     else:
+        if verbose:
+            print(code,"---","没有注释")
         return False
 
 # 检查当前行首尾是否有空格
-def checkHasSpace(code:str) -> bool:
+def checkHasSpace(code:str,verbose:bool) -> bool:
     if code[0] == " " and code[len(code)-1] == " ":
+        if verbose:
+            print(code,"---","当前行首尾有空格")
         return True
     else:
+        if verbose:
+            print(code,"---","当前行首尾没有空格")
         return False
 # 检查当前行的宏直接是否有空格
 def checkHasSpace_Between_Macro(code):
@@ -115,14 +123,14 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     # 预处理
     if verbose:
         print("传入的原始字符串 ","->",code)
-    if checkHasComment(code):
-        code = deleteComment(code)
-    if checkHasSpace(code):
-        code = delete_space_at_head_or_tail(code)
-    if checkHasSpace_Between_Macro(code):
-        code = delete_space_between_Macro(code)
-    if checkIsOpenArray(code):
-        code = preProcessArray(code)
+    if checkHasComment(code,verbose):
+        code = deleteComment(code,verbose)
+    if checkHasSpace(code,verbose):
+        code = delete_space_at_head_or_tail(code,verbose)
+    if checkHasSpace_Between_Macro(code,verbose):
+        code = delete_space_between_Macro(code,verbose)
+    if checkIsOpenArray(code,verbose):
+        code = preProcessArray(code,verbose)
     #macros = getMacro(code,scanLine,verbose)
     #allMacros.append(macros)
     # print("找到的所有结果",allMacros,len(allMacros))
@@ -131,7 +139,8 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
     # 备份
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)|(?P<closeMacro>\[\w+\])(?#紧凑结构的宏)"
-    regex = r"(?P<macroName>\[\w+\s)|(?# =前面的paramName)(?P<macroParamName>\S+(?=\=))|(?# =后面的数字)(?P<intValue>(?<=\=)\d+)|(?# int[2])(?P<arrayLength2>(?<=\=)\[.,.\])|(?#int[4])((?<=\=))\[.,.,.,.\]|(?# =后面的变量参数)(?P<varValue>(?<=\=)\w+)|(?#双引号字符串)((?<=\=)\".+\")|(?#单引号字符串)((?<=\=)\'.+\')|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)|(=)"
+    #regex = r"(?P<macroName>\[\w+\s)|(?# =前面的paramName)(?P<macroParamName>\S+(?=\=))|(?# =后面的数字)(?P<intValue>(?<=\=)\d+)|(?# int[2])(?P<arrayLength2>(?<=\=)\[.,.\])|(?#int[4])((?<=\=))\[.,.,.,.\]|(?# =后面的变量参数)(?P<varValue>(?<=\=)\w+)|(?#双引号字符串)((?<=\=)\".+\")|(?#单引号字符串)((?<=\=)\'.+\')|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)|(=)"
+    regex = r"(?P<macroName>\[\w+\s)|(?P<paramName>\S+(?=\=))|(?P<intValue>(?<=\=)\d+)|(?P<intArray2>(?<=\=)\[\d+,\d+\])|(?P<intArray4>(?=\=)\[\d+,\d+,\d+,\d+\])|(?P<varArray2>(?<=\=)\[\S+,\S+\])|(?P<varArray4>(?<=\=)\[\S+,\S+,\S+,\S+\])|(?P<varValue>(?<=\=)\w+)|(?P<stringValue1>((?<=\=)\".+\"))|(?P<stringValue2>(?<=\=)\'.+\')|(?P<closeMacro>\[\w+\])(?#取形如'[bg]'的字符串)|(=)"
     # 备注：如果顺序是乱的，还需要在进行一个自我构造空函数用于处理顺序问题
     # 顺序应该为 <macroName> <paramName> <paramValue> <paramName> <paramValue>
     # 其中：<intValue> <stringValue1> <stringValue2> <intArrayValue2> <intArrayValue4> <var> 与顺序无关，只需要一个参数对应一个值
@@ -152,23 +161,6 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
             result.append(newMacro)
         else:
             result.append(group_value)
-        # elif group.get("paramName") != None:
-        #     result.append(group["paramName"])
-        # elif group.get("intValue") != None:
-        #     result.append(group["intValue"])
-        # elif group.get("stringValue1") != None:
-        #     result.append(group["stringValue1"])
-        # elif group.get("stringValue2") != None:
-        #     result.append(group["stringValue2"])
-        # elif group.get("intArrayValue2") != None:
-        #     result.append(group["intArrayValue2"])
-        # elif group.get("intArrayValue4") != None:
-        #     result.append(group["intArrayValue4"])
-        # elif group.get("var") != None:
-        #     result.append(group["var"])
-        
-        # print(m)
-        #result.append(m)
     # finalResult:str = "".join(result)
-    print("分词结果","->",result)
+    # print("分词结果","->",result)
     return result
