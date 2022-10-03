@@ -23,6 +23,22 @@
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   0  , 20  ]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   x  , y  ]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   AxCx  , ByCy  ]]
+// 测试字符串参数 "双引号"
+[sprite index=10 file="_.png"]
+[sprite index=10 file="_A.png"]
+[sprite index=10 file="_ABC_.png"]
+[sprite index=10 file="01.png"]
+[sprite index=10 file="128.png"]
+[sprite index=10 file="smile show.png"]
+[sprite index=10 file="smile show ABC_ */+5905.png"]
+// 测试字符串参数 "单引号"
+[sprite index=10 file='_.png']
+[sprite index=10 file='_A.png']
+[sprite index=10 file='_ABC_.png']
+[sprite index=10 file='01.png']
+[sprite index=10 file='128.png']
+[sprite index=10 file='smile show.png']
+[sprite index=10 file='smile show ABC_ */+5905.png']
 // 测试紧凑的宏
 [if exp="a"]
 [endif]
