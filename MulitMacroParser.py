@@ -74,7 +74,6 @@ def preProcessArray(code) -> str:
     result = re.sub(regex,"",code)
     return result
 
-allMacros = []
 # 每次返回解析后的一行的数组分词
 def parse(code:str,scanLine:int,verbose:bool)->list:
     '''
@@ -86,19 +85,18 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
         ColorPrint.print_verbose("传入的原始字符串",code)
     if checkHasComment(code,verbose):
         code = deleteComment(code,verbose)
-        #ColorPrint.print_verbose("删除注释后的字符串",code)
+        ColorPrint.print_verbose("删除注释后的字符串",code)
     if checkHasSpace(code,verbose):
         code = delete_space_at_head_or_tail(code,verbose)
+        ColorPrint.print_verbose("删除头尾空格后的字符串",code)
     if checkHasSpace_Between_Macro(code,verbose):
         code = delete_space_between_Macro(code,verbose)
+        ColorPrint.print_verbose("删除宏之间空格后的字符串",code)
     if checkIsOpenArray(code,verbose):
         code = preProcessArray(code,verbose)
-    #macros = getMacro(code,scanLine,verbose)
-    #allMacros.append(macros)
-    # print("找到的所有结果",allMacros,len(allMacros))
+        ColorPrint.print_verbose("删除数组之间空格后的字符串",code)
     if verbose:
         ColorPrint.print_compile("预处理完毕的字符串",code)
-        # print(,"->",code)
     # 备份
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(\w+(?=\=))(?#匹配参数名称)|((?<=\=)\d+)(?#匹配int参数)|((?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|((?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|((?<=\=)\w+)(?#匹配变量型参数)"
     #regex = r"(?P<macroName>\[\w+\s)(?#匹配宏名称)|(?P<paramName>\w+(?=\=))(?#匹配参数名称)|(?P<intValue>(?<=\=)\d+)(?#匹配int参数)|(?P<intArrayValue2>(?<=\=)\[\d+,\d+\])(?#匹配长度为2的int数组)|(?P<intArrayValue4>(?<=\=)\[\d+,\d+,\d+,\d+])(?#匹配长度为4的int数组)|(?P<stringValue1>\"[a-zA-Z\._0-9\s]+\")(?#匹配使用双引号的string参数)|(?P<stringValue2>\'[a-zA-Z\._0-9\s]+\')(?#匹配使用单引号的string参数)|(?P<var>(?<=\=)\w+)(?#匹配变量型参数)|(?P<closeMacro>\[\w+\])(?#紧凑结构的宏)"
@@ -125,5 +123,6 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
         else:
             result.append(group_value)
     # finalResult:str = "".join(result)
-    # print("分词结果","->",result)
+    if verbose:
+        ColorPrint.print_compile("编译结果",str(result))
     return result
