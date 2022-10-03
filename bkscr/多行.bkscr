@@ -13,7 +13,7 @@
 // 测试宏的数组参数的值之间标准宏代码 int[2]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[0,2]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[20,20]]
-[sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[x,y]]
+[sprite index=xy file="11.png"][addto index=0 target=basic_layer pos=[x,y]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[AxCx,ByCy]]
 // 测试宏的数组参数的值之间标准宏代码 int[4]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[0,2,4,7]]

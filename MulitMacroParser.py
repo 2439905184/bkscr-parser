@@ -123,6 +123,13 @@ def parse(code:str,scanLine:int,verbose:bool)->list:
             oldMacro = group["macroName"]
             newMacro = oldMacro.replace("[","@").strip(" ")
             result.append(newMacro)
+        elif group.get("varArray2") != None:
+            oldArray = group["varArray2"] # 把[x,y]] -> [x,y]
+            ColorPrint.print_verbose("识别到变量数组",oldArray)
+            newArray = oldArray[0:len(oldArray)-1]
+            ColorPrint.print_verbose_hint("预处理变量数组并开始编译")
+            ColorPrint.print_compile(oldArray,newArray)
+            result.append(newArray)
         elif group.get("closeMacro") != None:
             oldMacro:str = group["closeMacro"].strip("\[|\]")
             newMacroList = ["@"]
