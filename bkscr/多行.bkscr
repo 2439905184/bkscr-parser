@@ -27,6 +27,18 @@
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   0  , 20  , 128  ]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   xFG  , yYA , 782 , GBA]]
 [sprite index=10 file="11.png"][addto index=0 target=basic_layer pos=[   AxCx  , 128 , AJG ,256 ]]
+// 测试宏参数的参数值(变量类型)
+[sprite index=MyVar file=MyPng][addto index=MyVar target=MyLayer pos=[MyX,MyY]]
+[sprite index=MyVar2 file=MyPng2][addto index=MyVar2 target=MyLayer2 pos=[MyX2,MyY2]]
+[sprite index=myvar3 file=mypng3][addto index=myvar3 target=mylayer3 pos=[myx3,myy3]]
+[sprite index=my_var4 file=my_png4][addto index=my_var4 target=my_layer4 pos=[my_x4,my_y4]]
+[sprite index=my_Var_5 file=my_Png_5][addto index=my_Var_5 target=my_Layer_5 pos=[my_X_5,my_X_5]]
+// 测试宏参数的参数值(变量类型) (数组带有空格)
+[sprite index=MyVar file=MyPng]  [addto index=MyVar target=MyLayer pos=[  MyX  ,  MyY  ]]
+[sprite index=MyVar2 file=MyPng2]  [addto index=MyVar2 target=MyLayer2 pos=[  MyX2  ,  MyY2  ]]
+[sprite index=myvar3 file=mypng3]  [addto index=myvar3 target=mylayer3 pos=[  myx3  ,  myy3  ]]
+[sprite index=my_var4 file=my_png4]  [addto index=my_var4 target=my_layer4 pos=[  my_x4  ,  my_y4  ]]
+[sprite index=my_Var_5 file=my_Png_5]  [addto index=my_Var_5 target=my_Layer_5 pos=[  my_X_5  ,  my_X_5  ]]
 // 测试字符串参数 "双引号"
 [sprite index=10 file="_.png"]
 [sprite index=10 file="_A.png"]
