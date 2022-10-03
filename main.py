@@ -30,8 +30,8 @@ if argv_verbose == "verbose":
 else:
     verbose_mode = False
 if verbose_mode:
-    ColorPrint.print_verbose_hint()
-    ColorPrint.print_compile_hint()
+    ColorPrint.print_verbose_once()
+    ColorPrint.print_compile_once()
 # 逐行扫描
 for index,line in enumerate(lines):
     currentScanLine = index + 1
