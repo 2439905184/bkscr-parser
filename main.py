@@ -36,7 +36,3 @@ for index,line in enumerate(lines):
             out.write(element + "\n")
         #result.append(buffer_array)
 out.close()
-#print("结果",result)
-# for element in result:
-    # out.write(element + "\n")
-# out.close()

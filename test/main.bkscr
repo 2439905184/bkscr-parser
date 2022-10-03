@@ -1,5 +1,6 @@
 ﻿*main
 [sprite file='11.jpg' index=0]
 @addto index=0 target=basic_layer pos=[ 0, 20 ]
+[addto index=0 target=basic_layer pos=[0,20]]
 [if exp="a"]
 [endif] [p]
