@@ -21,6 +21,15 @@
 2. [X] 多行宏的独立解析器(词法分析器)
 3. [ ] parser代码的独立解析器(词法分析器)
 
+## 如何使用
+1. 下载此仓库源码
+2. python main.py bkscr verbose
+```js
+//命令行运行 参数格式
+//python.exe main.py <相对文件夹目录> <是否启用详细输出>
+//python.exe main.py bkscr
+//python.exe main.py bkscr verbose
+```
 ## 运行截图
 
 verbose模式输出信息 
