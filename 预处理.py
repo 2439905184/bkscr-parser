@@ -81,36 +81,57 @@ def 删除_数组之间的空格(code) -> str:
     result = re.sub(regex,"",code)
     return result
 
+def 检查到_当前代码行是空的(code) -> bool:
+    if code == "":
+        return True
+    else:
+        return False
+
+# 返回当前代码行
 def 处理(code_type: str, 当前代码行: str, 详细输出: bool) -> str:
+    删除注释后的代码行 = ""
+    删除首尾空格后的代码行 = ""
+    删除数组空格后的代码行 = ""
     # if code_type == "多行宏":
     #     pass
     if code_type == "单行宏":
-        if 详细输出:
-            ColorPrint.print_verbose("传入的原始字符串",当前代码行)
-
-        if 检查到_有注释(当前代码行, 详细输出):
-            删除注释后的代码行 = deleteComment(当前代码行)
-            ColorPrint.print_verbose("删除注释后的字符串",删除注释后的代码行)
-
-        if 检查到_当前行的首尾有空格(删除注释后的代码行, 详细输出):
-            删除首尾空格后的代码行 = 删除_首尾的空格(删除注释后的代码行)
-            ColorPrint.print_verbose("删除头尾空格后的字符串",删除首尾空格后的代码行)
+        
+        if 检查到_当前代码行是空的(当前代码行):
+            ColorPrint.print_verbose_hint("当前代码行是空的,跳过!")
+            pass
         else:
-            删除首尾空格后的代码行 = 删除注释后的代码行
+            if 详细输出:
+                ColorPrint.print_verbose("传入的原始字符串",当前代码行)
 
-        if 检查到_数组之间的空格(删除首尾空格后的代码行, 详细输出):
-            code = 删除_数组之间的空格(删除首尾空格后的代码行)
-            ColorPrint.print_verbose("删除数组之间空格后的字符串",code)
+            if 检查到_有注释(当前代码行, 详细输出):
+                删除注释后的代码行 = deleteComment(当前代码行)
+                ColorPrint.print_verbose("删除注释后的字符串",删除注释后的代码行)
+                if 检查到_当前代码行是空的(删除注释后的代码行):
+                    ColorPrint.print_verbose_hint("删除注释后的字符串是空的,跳过!")
+                    pass
+                else:          
+                    if 检查到_当前行的首尾有空格(删除注释后的代码行, 详细输出):
+                        删除首尾空格后的代码行 = 删除_首尾的空格(删除注释后的代码行)
+                        ColorPrint.print_verbose("删除头尾空格后的字符串",删除首尾空格后的代码行)
+                    else:
+                        删除首尾空格后的代码行 = 删除注释后的代码行
 
-        else:
-            ColorPrint.print_verbose_hint("没有检测到数组之间的空格")
-            ColorPrint.print_verbose("预处理完毕的结果",删除首尾空格后的代码行)
-            return 删除首尾空格后的代码行
-            # print(删除首尾空格后的代码行)
-            # ColorPrint.print_verbose(,code)
-        # if 详细输出:
-        #     ColorPrint.print_compile("预处理完毕的字符串",code)
-        #     return code
+                    if 检查到_数组之间的空格(删除首尾空格后的代码行, 详细输出):
+                        删除数组空格后的代码行 = 删除_数组之间的空格(删除首尾空格后的代码行)
+                        ColorPrint.print_verbose("删除数组之间空格后的字符串",删除数组空格后的代码行)
+                        if 详细输出:
+                            ColorPrint.print_compile("预处理完毕的字符串",删除数组空格后的代码行)
+                            return 删除数组空格后的代码行
+                        return 删除数组空格后的代码行
+
+                    else:
+                        ColorPrint.print_verbose_hint("没有检测到数组之间的空格")
+                        ColorPrint.print_verbose("预处理完毕的结果",删除首尾空格后的代码行)
+                        if 详细输出:
+                            ColorPrint.print_compile("预处理完毕的字符串",删除首尾空格后的代码行)
+                            return 删除首尾空格后的代码行
+                        return 删除首尾空格后的代码行
+                    
     # elif code_type == "Parser脚本":
     #     pass
 

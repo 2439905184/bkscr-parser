@@ -1,23 +1,21 @@
 # 基于正则表达式的多行宏函数的词法分析器
 import re
 import ColorPrint
-
+# bkengine单行宏匹配
+# @\w+(?# 宏名称)|[a-z_A-Z]+(?=\=)(?# =前面的参数名)|(?<=\=)\w+(?# =后面的变量或者数字)|(?<=\=)\'.+\'|(?<=\=)\".+\"(?# =后面的字符串)|(?<=\=)\[\S+\](?# =后面的数组)
 def getTokens(code_line) -> list:
     token_result = []
-    pre = []
-    a:str = code_line[1:len(code_line)]
-    split = a.split("=")[0] # a=1 b=2 c=3 [a,1]
-    param_name = split[0]
-    param_value = split[1]
-    pre.append()
-    token_result.append(param_name)
-    token_result.append(param_value)
+    regex = r"@\w+(?# 宏名称)|[a-z_A-Z]+(?=\=)(?# =前面的参数名)|(?<=\=)\w+(?# =后面的变量或者数字)|(?<=\=)\'.+\'|(?<=\=)\".+\"(?# =后面的字符串)|(?<=\=)\[\S+\](?# =后面的数组)"
+    matches = re.finditer(regex,code_line)
+    for matchNum, match in enumerate(matches):
+        group = match.group()
+        token_result.append(group)
+    return token_result
 # 每次返回解析后的一行的数组分词
-def parse(code:str,scanLine:int,verbose:bool)->list:
+def parse(code_line:str,scanLine:int,verbose:bool)->list:
     '''
     code: 经过预处理的一行代码
     verbose: 是否输出详细信息
     '''
-    result = re.split(r"\s+","code")
-    
+    result = getTokens(code_line)
     return result
