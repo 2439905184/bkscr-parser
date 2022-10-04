@@ -28,7 +28,7 @@ def print_compile_once():
     print("\033[1;31;40m开始编译\033[0m")
 
 # 可重复使用的函数
-def print_verbose_hint(arg):
+def print_verbose_hint(arg:str):
     print("\033[1;31;40m" + arg + "\033[0m")
 
 def test():        
