@@ -18,4 +18,6 @@ def parse(code_line:str,scanLine:int,verbose:bool)->list:
     verbose: 是否输出详细信息
     '''
     result = getTokens(code_line)
+    if verbose:
+        ColorPrint.print_compile("单行宏编译完毕的结果",str(result))
     return result

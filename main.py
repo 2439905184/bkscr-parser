@@ -35,7 +35,7 @@ else:
 if param_verbose == "verbose":
     verbose_enabled = True
 
-filein = "bkscr/单行.bkscr"
+filein = "bkscr/多行.bkscr"
 fileout = "compile_out/out.txt" # 备份 fileout = filein.replace(".bkscr",".txt")
 
 ColorPrint.print_verbose_once()
@@ -57,7 +57,7 @@ if param_input_dir != None:
         预处理结果 = [] # string []
         for line in lines:
             预处理结果.append(预处理.处理("单行宏",line,verbose_enabled))
-        print(预处理结果)
+        ColorPrint.print_compile("预处理结果",str(预处理结果))
 
         # 逐行扫描
         for index,line in enumerate(lines):
@@ -69,12 +69,13 @@ if param_input_dir != None:
                 #print("缓冲区",buffer_line)
                 for element in lineToken:
                     # print(currentScanLine, buffer_array)
+                    
                     out.write(element + "\n")
                 # result.append(buffer_line)
-        #     if line[0] == "[":
-        #         lineToken:list = mp.parse(code=line, scanLine=currentScanLine, verbose=verbose_enabled)
-        #         for element in lineToken:
+            if line[0] == "[":
+                lineToken:list = mp.parse(code=line, scanLine=currentScanLine, verbose=verbose_enabled)
+                for element in lineToken:
         #             #print(currentScanLine, buffer_array)
-        #             out.write(element + "\n")
+                    out.write(element + "\n")
         #         #result.append(buffer_array)
         out.close()
