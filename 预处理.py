@@ -87,13 +87,24 @@ def 检查到_当前代码行是空的(code) -> bool:
     else:
         return False
 
+def 清理数组(code_line: str,fianl_result: list) -> list:
+    for element in code_line:
+        if element == None or element == "\n":
+            pass
+        else:
+            fianl_result.append(element)
+    return fianl_result
+
 # 返回当前代码行
+# todo 移除数组中的None和\n
 def 处理(code_type: str, 当前代码行: str, 详细输出: bool) -> str:
     删除注释后的代码行 = ""
     删除首尾空格后的代码行 = ""
     删除数组空格后的代码行 = ""
+    最终结果 = []
     # if code_type == "多行宏":
     #     pass
+    # todo 移除这个参数？
     if code_type == "单行宏":
         
         if 检查到_当前代码行是空的(当前代码行):
@@ -121,24 +132,17 @@ def 处理(code_type: str, 当前代码行: str, 详细输出: bool) -> str:
                         ColorPrint.print_verbose("删除数组之间空格后的字符串",删除数组空格后的代码行)
                         if 详细输出:
                             ColorPrint.print_compile("预处理完毕的字符串",删除数组空格后的代码行)
-                            return 删除数组空格后的代码行
-                        return 删除数组空格后的代码行
+                        最终结果 = 清理数组(删除数组空格后的代码行)
+                        return 最终结果
 
                     else:
                         ColorPrint.print_verbose_hint("没有检测到数组之间的空格")
                         ColorPrint.print_verbose("预处理完毕的结果",删除首尾空格后的代码行)
                         if 详细输出:
                             ColorPrint.print_compile("预处理完毕的字符串",删除首尾空格后的代码行)
-                            return 删除首尾空格后的代码行
-                        return 删除首尾空格后的代码行
-                    
+                        最终结果 = 清理数组(删除数组空格后的代码行)
+                        return 最终结果
+                        # return 删除首尾空格后的代码行
+                                        
     # elif code_type == "Parser脚本":
     #     pass
-
-    
-
-# def 删除_首尾空格(当前代码行: str, 详细输出: bool):
-#     if 检查到_有空格(当前代码行, 详细输出):
-#         处理结果:str = 删除_首尾的空格(当前代码行)
-#         ColorPrint.print_verbose("删除头尾空格后的字符串",当前代码行)
-#         return 处理结果
