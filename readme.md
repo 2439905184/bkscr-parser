@@ -23,9 +23,11 @@
 
 ## 运行截图
 
-verbose模式输出信息
+verbose模式输出信息 
+
 ![verbose模式输出](doc/verbose.png)
 输出的分词标记文件
+
 ![输出的分词标记文件](doc/%E7%BB%93%E6%9E%9C.png)
 
 ## 想要补充开发的内容
